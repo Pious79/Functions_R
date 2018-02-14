@@ -2,7 +2,7 @@
 #length : longueur de l'echantillon
 # Rang : rang obtenu par order[order]
 
-fc.phi_Lombard<-function(score, long , Rang)
+phi_lombard <- function(score, long , Rang)
 {
   if (score == 1){
     phi <- 2*(Rang/(long+1))-1

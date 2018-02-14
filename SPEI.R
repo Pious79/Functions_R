@@ -31,7 +31,7 @@
 ##----------------------------------------------------------------------------##
 #-------------------------------------------------------------------------------
 
-fc.SPEI<-function(Data, Delta=12, Distribution = "log-Logistic"){
+spei <- function(Data, Delta=12, Distribution = "log-Logistic"){
   library(SPEI)
   library(hydroTSM)
   ## Verification arguments d'entree

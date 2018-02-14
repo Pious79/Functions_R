@@ -12,7 +12,7 @@
 #   Sortie : varOut [class] : 
 ##----------------------------------------------------------------------------##
 #-------------------------------------------------------------------------------
-fc.SDI <- function(MonthlyFlow, Period) {
+sdi <- function(MonthlyFlow, Period) {
   ## Verification arguments d'entree
   if (!is.zoo(MonthlyData)) { stop("MonthlyData must be a zoo"); return(NULL) }
   # --- Verification du pas de temps

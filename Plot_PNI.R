@@ -21,7 +21,8 @@
 ##------------------------------------------------------------------------------##
 #   Sortie    : Deux graphiques
 ##------------------------------------------------------------------------------##
-fc.plot_PNI<-function(data, type_data="", bv_nom="", nom_axex="Temps", nom_axey="Donnees [unite]")
+plot_pni <- function(data, type_data="", bv_nom="", nom_axex="Temps",
+                     nom_axey="Donnees [unite]")
 {
   ## Verification arguments d'entree
   if (!is.zoo(data)) { stop("Data must be a zoo"); return(NULL) }

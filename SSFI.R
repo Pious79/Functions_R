@@ -31,7 +31,7 @@
 ##----------------------------------------------------------------------------##
 #-------------------------------------------------------------------------------
 
-fc.SSFI<-function(MonthlyData, Delta=12, Distribution = "gamma"){
+ssfi <- function(MonthlyData, Delta=12, Distribution = "gamma"){
   
   library(hydroTSM)
   ## Verification arguments d'entree

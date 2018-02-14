@@ -30,7 +30,7 @@
 ##----------------------------------------------------------------------------##
 #-------------------------------------------------------------------------------
 
-fc.SPI<-function(MonthlyData, Delta=12, Distribution = "gamma"){
+spi <- function(MonthlyData, Delta=12, Distribution = "gamma"){
   
   library(hydroTSM)
   library(SCI)

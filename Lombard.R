@@ -1,4 +1,4 @@
-fc.testLombard<-function(data, val_score, date) #val_score=1,2,3
+testLombard <- function(data, val_score, date) #val_score=1,2,3
 {
   
   Ind_run <- which(!is.na(data))

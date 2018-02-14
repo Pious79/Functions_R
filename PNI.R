@@ -17,7 +17,7 @@
 ##----------------------------------------------------------------------------##
 #-------------------------------------------------------------------------------
 
-fc.PNI <- function(MonthlyData, Delta = 12){
+pni <- function(MonthlyData, Delta = 12){
   library(hydroTSM)
   ## Verification arguments d'entree
   if (!is.zoo(MonthlyData)) { stop("MonthlyData must be a zoo"); return(NULL) }

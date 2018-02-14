@@ -23,7 +23,8 @@
 ##------------------------------------------------------------------------------##
 #---------------------------------------------------------------------------------
 
-fc.indice_saisonnalite<-function(data, debYear="01-01", Pourc_debut=0.1, Pourc_milieu=0.5, Pourc_fin=0.9)
+seasonality_index <- function(data, debYear="01-01", Pourc_debut=0.1,
+                              Pourc_milieu=0.5, Pourc_fin=0.9)
 {
   source(file.path("C:/Users/pierre.lhermite/Documents/Pierre/Workspace_R/Functions/Code_deja_pret/fc.CalcStat.R"))
   

@@ -14,7 +14,7 @@
 ##------------------------------------------------------------------------------##
 #---------------------------------------------------------------------------------
 
-fc.Hanning<-function(data){
+hanning <- function(data){
   library(hydroTSM)
   ## Verification arguments d'entree
   if (!is.zoo(data)) { stop("Data must be a zoo"); return(NULL) }

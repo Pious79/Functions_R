@@ -23,10 +23,11 @@
 ##------------------------------------------------------------------------------##
 #---------------------------------------------------------------------------------
 
-fc.ISSQ <- function(MonthlyData) {
+issq <- function(MonthlyData) {
   library(hydroTSM)
   ## Verification arguments d'entree
   if (!is.zoo(MonthlyData)) { stop("MonthlyData must be a zoo"); return(NULL) }
+  
   # --- Verification du pas de temps
   if (sfreq(MonthlyData) != "monthly") {
     stop("MonthlyData must be a daily serie \n"); return(NULL)

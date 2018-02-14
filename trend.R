@@ -21,7 +21,7 @@
 ##------------------------------------------------------------------------------##
 #   Sortie    : Deux graphiques
 ##------------------------------------------------------------------------------##
-fc.plot_trend <- function(data, type_data="", bv_nom="", nom_axex="Temps",
+plot_trend <- function(data, type_data="", bv_nom="", nom_axex="Temps",
                           nom_axey="Donnees [unite]")
 {
   ## Verification arguments d'entree
