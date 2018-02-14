@@ -20,6 +20,7 @@ hanning <- function(data){
   if (!is.zoo(data)) { stop("Data must be a zoo"); return(NULL) }
   
   Ind_run <- which(!is.na(coredata(data)))
+  
   #Creation et remplissage du vecteur par le filtre d'Hanning
   Han <- rep(NA, length(data))
   Han[Ind_run[1]] <- ((0.54*coredata(data[Ind_run[1]]))
