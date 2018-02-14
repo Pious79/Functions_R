@@ -23,7 +23,7 @@
 ##------------------------------------------------------------------------------##
 #---------------------------------------------------------------------------------
 
-fc.ISSQ<-function(MonthlyData) {
+fc.ISSQ <- function(MonthlyData) {
   library(hydroTSM)
   ## Verification arguments d'entree
   if (!is.zoo(MonthlyData)) { stop("MonthlyData must be a zoo"); return(NULL) }
@@ -33,8 +33,9 @@ fc.ISSQ<-function(MonthlyData) {
   }
   
   months <- substr(index(MonthlyData), 6, 7)
-  mediane <- aggregate(MonthlyData, by = months, FUN = median, na.rm = TRUE)
-  diff <- MonthlyData - coredata(mediane)[as.numeric(months)]
+  decile <- aggregate(MonthlyData, by = months,
+                       FUN = quantile, na.rm = TRUE)
+  diff <- MonthlyData - coredata(decile[, 3])[as.numeric(months)]
   
   res <- rep(NA, length(diff))
   som <- 0
