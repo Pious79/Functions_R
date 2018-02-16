@@ -1,29 +1,29 @@
 ##____________________________________________________________________________##
 ##  Function to filter data with Hanning filter order 2                       ##
-##  Pierre L'HERMITE - 2017-07-19 - hanning                                   ##
+##  Pierre L'HERMITE - 2017-07-19 - hanning.R                                 ##
 ##____________________________________________________________________________##
 ##----------------------------------------------------------------------------##
-#   Fonction : Calcul les donnees avec le filtre passe bas d'Hanning d'ordre 2##
+#   Fonction : Calculate data with hanning filter order 2
 ##----------------------------------------------------------------------------##
-#   Arguments : data [zoo] : vecteur contenant les donnees journalieres,
-#                            mensuelles, saisonnieres et annuelles, 
-#                            avec la date au format %Y-%m-%d
+#   Argument : data [zoo] : vector with daily, monthly, seasonnal or annual
+#                           with date in %Y-%m-%d
 ##----------------------------------------------------------------------------##
-#   Sortie    : Hanzoo [zoo] : vecteur contenant les donnees filtrees avec la 
-#                              date au format %Y-%m-%d
+#   Value : hanzoo [zoo] : vector with data after hanning filter with date 
+#                          in %Y-%m-%d
 ##----------------------------------------------------------------------------##
 #-------------------------------------------------------------------------------
 
 hanning <- function(data){
-  
-  library(hydroTSM)
-  
-  ## Verification arguments d'entree
-  if (!is.zoo(data)) { stop("Data must be a zoo"); return(NULL) }
+
+  ##__Checking______________________________________________________________####
+  if (!is.zoo(data)) {
+    stop("Data must be a zoo")
+    return(NULL)
+  }
   
   ind_run <- which(!is.na(coredata(data)))
   
-  #Creation et remplissage du vecteur par le filtre d'Hanning
+  ##__Calculation___________________________________________________________####
   han <- rep(NA, length(data))
   
   han[ind_run[1]] <- ((0.54*coredata(data[ind_run[1]]))
