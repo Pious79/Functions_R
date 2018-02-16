@@ -3,19 +3,20 @@
 ##  Pierre L'HERMITE - 20171011 - issp.R                                      ##
 ##____________________________________________________________________________##
 ##----------------------------------------------------------------------------##
-#   Function : Calcul the index about rainfall anomaly by month with the
+#   Function : Calculate the index about rainfall anomaly by month with the
 #              length, the drought type and the intensity
 ##----------------------------------------------------------------------------##
-#   Input : monthly_data [zoo] : monthly data in zoo class with date in %Y-%m-%d
+#   Argument : monthly_data [zoo] : rainfall monthly data in zoo class 
+#                                    with date in %Y-%m-%d
 ##----------------------------------------------------------------------------##
-#   Output    : resissp [list] : list with 3 zoo et 1 dataframe
-#                                (issp, lengthzoo, drought_type, drought_number)
-#               issp [zoo] : zoo with the issp values with date in %Y-%m-%d
-#               lengthzoo [zoo] : zoo with the length of drought with date
-#                                 in %Y-%m-%d
-#               drought_type [zoo] : zoo with the type of the period for
-#                                    each month 
-#               drought_number [dataframe] : dataframe with the number of 
+#   Values : resissp [list] : list with 3 zoo et 1 dataframe
+#                             (issp, lengthzoo, drought_type, drought_number)
+#            issp [zoo] : zoo with the issp values with date in %Y-%m-%d
+#            lengthzoo [zoo] : zoo with the length of drought with date
+#                              in %Y-%m-%d
+#            drought_type [zoo] : zoo with the type of the period for
+#                                 each month 
+#            drought_number [dataframe] : dataframe with the number of 
 #                           different period by type
 #                           Extwet [issp>2], Verywet [1.99>issp>1.5],
 #                           wet [1.49>issp>1], Normal [0.99>issp>-0.99],
@@ -25,19 +26,17 @@
 #-------------------------------------------------------------------------------
 
 issp <- function(monthly_data) {
-  
-  library(hydroTSM)
-  
+
   ##__Checking______________________________________________________________####
-  ## Data input checking
+  # Data input checking
   if (!is.zoo(monthly_data)) { stop("monthly_data must be a zoo"); return(NULL)}
   
   # Time step checking
-  if (sfreq(monthly_data) != "monthly") {
+  if (periodicity(monthly_data)$scale != "monthly") {
     stop("monthly_data must be a monthly serie \n"); return(NULL)
   }
   
-  ##__Calcul index__________________________________________________________####
+  ##__Index calculation_____________________________________________________####
   # Anomaly between precipitation and monthly median
   
   months <- substr(index(monthly_data), 6, 7)
@@ -67,7 +66,7 @@ issp <- function(monthly_data) {
     }
   }  
   
-  # Calcul of issp
+  # Issp calculation
   vect_index <- numeric()
   
   mapa <- mean(res, na.rm = T)  
@@ -78,7 +77,7 @@ issp <- function(monthly_data) {
   issp <- zoo(as.numeric(vect_index), index(monthly_data))
   
   ##__Index analysis________________________________________________________####
-  # Calcul the length of drought
+  # Calculate the length of drought
   length_drought <- numeric()
   
   n <- 0
