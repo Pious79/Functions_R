@@ -1,15 +1,15 @@
-##______________________________________________________________________________##
-##  Function to calculate Mann-Kendall, Pettitt, Sen                            ##
-##  Pierre L'HERMITE - 2017-07-31 - fc.trace_MK_Sen_Pettitt                     ##
-##______________________________________________________________________________##
-##------------------------------------------------------------------------------##
+##____________________________________________________________________________##
+##  Function to calculate Mann-Kendall, Pettitt, Sen                          ##
+##  Pierre L'HERMITE - 2017-07-31 - mk_sen_pettitt.R                          ##
+##____________________________________________________________________________##
+##----------------------------------------------------------------------------##
 #   Fonction : Calcul les tests de Mann-Kendall, de Pettitt et de Sen pour
 #              obtenir la tendance, la rupture et la pente de regression
-##------------------------------------------------------------------------------##
+##----------------------------------------------------------------------------##
 #   Arguments : data [zoo] : vecteur contenant les donnees (annuel, mensuel,
 #                            saisonnier, journalier avec la date %Y-%m-%d)
-##------------------------------------------------------------------------------##
-#   Sortie    : Res [list] : Resultats des differents tests :
+##----------------------------------------------------------------------------##
+#   Values : Res [list] : Resultats des differents tests :
 #                            MK [] : recapitulatif des resultats de Mann-Kendall
 #                            signeMK [vect] : contenant le signe de MK 
 #                            correspondant à la valeur de la pvalue (- p>0.1,
@@ -19,18 +19,13 @@
 #                            correspondant à la valeur de la pvalue (- p>0.1,
 #                            + 0.1>p>0.05, ++ 0.05>p>0.01, et +++ p<0.01)
 #                            Pente [numeric] : pente obtenu par le test de Sens
-##------------------------------------------------------------------------------##
-#---------------------------------------------------------------------------------
+##----------------------------------------------------------------------------##
+#-------------------------------------------------------------------------------
 
 mk_sen_pettitt <- function(data)
 {
-  if(missing(data)) { print("Must have a data \n"); return()}
-  
-  library(zoo)
-  library(pheno)
-  library(Kendall)
-  library(trend)
-  library(stats)
+  if(missing(data)) { print("Must have a data \n"); return()
+  }
   
   #na.index permet d'eliminer les NA dans le zoo de donnee
   na.index <- which(is.na(data))
