@@ -3,20 +3,20 @@
 ##  Pierre L'HERMITE - 20180119 - issq.R                                      ##
 ##____________________________________________________________________________##
 ##----------------------------------------------------------------------------##
-#   Function : Calculate the index about discharge anomaly by month with the
+#   Description: Calculate the index about discharge anomaly by month with the
 #              length, the drought type and the intensity
 ##----------------------------------------------------------------------------##
-#   Argument : monthly_data [zoo] : discharge monthly data in zoo class 
+#   Argument: monthly_data [zoo] : discharge monthly data in zoo class 
 #                                   with date in %Y-%m-%d
 ##----------------------------------------------------------------------------##
-#   Values : resissq [list] : list with 3 zoo et 1 dataframe
+#   Values: resissq [list] : list with 3 zoo et 1 dataframe
 #                             (issq, lengthzoo, drought_type, drought_number)
-#            issq [zoo] : zoo with the issq values with date in %Y-%m-%d
-#            lengthzoo [zoo] : zoo with the length of drought with date
+#           issq [zoo] : zoo with the issq values with date in %Y-%m-%d
+#           lengthzoo [zoo] : zoo with the length of drought with date
 #                              in %Y-%m-%d
-#            drought_type [zoo] : zoo with the type of the period for
+#           drought_type [zoo] : zoo with the type of the period for
 #                                 each month 
-#            drought_number [dataframe] : dataframe with the number of 
+#           drought_number [dataframe] : dataframe with the number of 
 #                           different period by type
 #                           Extwet [issq>2], Verywet [1.99>issq>1.5],
 #                           wet [1.49>issq>1], Normal [0.99>issq>-0.99],
