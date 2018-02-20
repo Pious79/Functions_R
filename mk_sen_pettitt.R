@@ -3,66 +3,74 @@
 ##  Pierre L'HERMITE - 2017-07-31 - mk_sen_pettitt.R                          ##
 ##____________________________________________________________________________##
 ##----------------------------------------------------------------------------##
-#   Fonction : Calcul les tests de Mann-Kendall, de Pettitt et de Sen pour
-#              obtenir la tendance, la rupture et la pente de regression
+#   Description: Obtain trend with Mann-Kendall test, breaking point with 
+#                Pettitt test and Sen test to have the coefficient of 
+#                regression 
 ##----------------------------------------------------------------------------##
-#   Arguments : data [zoo] : vecteur contenant les donnees (annuel, mensuel,
-#                            saisonnier, journalier avec la date %Y-%m-%d)
+#   Arguments: data [zoo] : vector with daily, monthly, seasonnal or annual
+#                           with date in %Y-%m-%d
 ##----------------------------------------------------------------------------##
-#   Values : Res [list] : Resultats des differents tests :
-#                            MK [] : recapitulatif des resultats de Mann-Kendall
-#                            signeMK [vect] : contenant le signe de MK 
-#                            correspondant à la valeur de la pvalue (- p>0.1,
-#                            + 0.1>p>0.05, ++ 0.05>p>0.01, et +++ p<0.01)
-#                            Pettitt [] : recapitulatif des resultats de Pettitt
-#                            signeP [vect] : contenant le signe de Pettitt 
-#                            correspondant à la valeur de la pvalue (- p>0.1,
-#                            + 0.1>p>0.05, ++ 0.05>p>0.01, et +++ p<0.01)
-#                            Pente [numeric] : pente obtenu par le test de Sens
+#   Values: res [list] : res_mk [] : resume of Mann-Kendall test
+#                        symbol_mk [vect] : vector with MK symbol according 
+#                        to pvalue of MK test ("-" if pvalue > 0.1, "+" if
+#                        0.1 > pvalue > 0.05, "++" if 0.05 > pvalue > 0.01, and
+#                        "+++" if pvalue < 0.01)
+#                        pettitt [] : resume of Pettitt test
+#                        symbol_pettitt [vect] : vector with Pettitt symbol 
+#                        according to Pettitt test ("-" if pvalue > 0.1, "+" if
+#                        0.1 > pvalue > 0.05, "++" if 0.05 > pvalue > 0.01, and
+#                        "+++" if pvalue < 0.01)
+#                        slope [numeric] : slope according to Sen test
 ##----------------------------------------------------------------------------##
 #-------------------------------------------------------------------------------
 
 mk_sen_pettitt <- function(data)
 {
-  if(missing(data)) { print("Must have a data \n"); return()
+  ##__Checking______________________________________________________________####
+  # Data input checking
+  if (missing(data)) {stop("Must have data \n"); return(NULL)}
+  
+  if (!is.zoo(data)) {stop("Data must be a zoo"); return(NULL)}
+  
+  ##__Calculation___________________________________________________________####
+  # Remove NA value from zoo data
+  na.index <- which(is.na(data))
+  
+  if (length(na.index) != 0) {
+    data <- data[-na.index]
+  } else {
+    data
   }
   
-  #na.index permet d'eliminer les NA dans le zoo de donnee
-  na.index <- which(is.na(data))
-  if(length(na.index) != 0){
-    data<-data[-na.index]
-  }else {data}
+  # Transformation data into time series for different test
+  val <- coredata(data)
+  datats <- ts(val, start = 1, end = length(val))
   
-  #extraire annee
-  ystart<-as.numeric(format(start(data), format="%Y"))
-  yend<-as.numeric(format(end(data), format="%Y"))
+  # Different test: Pettitt, MK and Sen
+  pettitt <- pettitt.test(datats)
+  slope <- sens.slope(datats, level = 0.95)
+  res_mk <- mk.test(datats)
   
-  val=coredata(data)
-  datats<-ts(val, start = 1 , end = length(val))
-  
-  #Test de Pettitt, de MK et de Sen
-  Pettitt<-pettitt.test(datats)
-  pente<-sens.slope(datats, level=0.95)
-  MK<-mk.test(datats)
-  
-  if(MK$pvalue<=0.01){
-    (signeMK="+++")
-  } else if(MK$pvalue>=0.01 & MK$pvalue<=0.05){
-    (signeMK="++")
-  } else if(MK$pvalue>=0.05 & MK$pvalue<=0.1){
-    (signeMK="+")
+  if (res_mk$pvalue <= 0.01) {
+    (symbol_mk <- "+++")
+  } else if (res_mk$pvalue >= 0.01 & res_mk$pvalue <= 0.05) {
+    (symbol_mk <- "++")
+  } else if (res_mk$pvalue >= 0.05 & res_mk$pvalue <= 0.1) {
+    (symbol_mk <- "+")
   } else {
-    (signeMK="-")}
+    (symbol_mk <- "-")
+  }
   
-  if(Pettitt$p.value<=0.01){
-    (signeP="+++")
-  } else if(Pettitt$p.value>=0.01 & Pettitt$p.value<=0.05){
-    (signeP="++")
-  } else if(Pettitt$p.value>=0.05 & Pettitt$p.value<=0.1){
-    (signeP="+")
+  if (pettitt$p.value <= 0.01) {
+    (symbol_pettitt <- "+++")
+  } else if (pettitt$p.value >= 0.01 & pettitt$p.value <= 0.05) {
+    (symbol_pettitt <- "++")
+  } else if (pettitt$p.value >= 0.05 & pettitt$p.value <= 0.1) {
+    (symbol_pettitt <- "+")
   } else {
-    (signeP="-")}
+    (symbol_pettitt <- "-")
+  }
   
-  Res<-list(MK, signeMK, Pettitt, signeP, pente )
-  return(Res)
+  res <- list(res_mk, symbol_mk, pettitt, symbol_pettitt, slope)
+  return(res)
 }
