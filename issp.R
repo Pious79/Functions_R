@@ -3,13 +3,13 @@
 ##  Pierre L'HERMITE - 20171011 - issp.R                                      ##
 ##____________________________________________________________________________##
 ##----------------------------------------------------------------------------##
-#   Function : Calculate the index about rainfall anomaly by month with the
+#   Description: Calculate the index about rainfall anomaly by month with the
 #              length, the drought type and the intensity
 ##----------------------------------------------------------------------------##
-#   Argument : monthly_data [zoo] : rainfall monthly data in zoo class 
+#   Argument: monthly_data [zoo] : rainfall monthly data in zoo class 
 #                                    with date in %Y-%m-%d
 ##----------------------------------------------------------------------------##
-#   Values : resissp [list] : list with 3 zoo et 1 dataframe
+#   Values: resissp [list] : list with 3 zoo et 1 dataframe
 #                             (issp, lengthzoo, drought_type, drought_number)
 #            issp [zoo] : zoo with the issp values with date in %Y-%m-%d
 #            lengthzoo [zoo] : zoo with the length of drought with date
