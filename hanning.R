@@ -3,12 +3,12 @@
 ##  Pierre L'HERMITE - 2017-07-19 - hanning.R                                 ##
 ##____________________________________________________________________________##
 ##----------------------------------------------------------------------------##
-#   Fonction : Calculate data with hanning filter order 2
+#   Description: Calculate data with hanning filter order 2
 ##----------------------------------------------------------------------------##
-#   Argument : data [zoo] : vector with daily, monthly, seasonnal or annual
-#                           with date in %Y-%m-%d
+#   Argument: data [zoo] : vector with daily, monthly, seasonnal or annual
+#                          with date in %Y-%m-%d
 ##----------------------------------------------------------------------------##
-#   Value : hanzoo [zoo] : vector with data after hanning filter with date 
+#   Value: hanzoo [zoo] : vector with data after hanning filter with date 
 #                          in %Y-%m-%d
 ##----------------------------------------------------------------------------##
 #-------------------------------------------------------------------------------
