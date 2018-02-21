@@ -45,14 +45,13 @@ plot_trend <- function(data, trend = TRUE, data_kind ="", name ="",
   
   if (trend == TRUE){
     res_test <- mk_sen_pettitt(datatest)
+    breaking_year <- format(index(datatest[res_test[[3]]$estimate]),
+                            format = "%Y-%m")
   }
   
   # Extract year
   ystart <- as.numeric(format(start(datatest), format="%Y"))
   yend <- as.numeric(format(end(datatest), format="%Y"))
-  
-  breaking_year <- format(index(datatest[res_test[[3]]$estimate]),
-                          format = "%Y-%m")
   
   # Modification to plot bicolor graph
   coredata(datatest)[is.na(coredata(datatest))] <- mid_value
@@ -61,18 +60,23 @@ plot_trend <- function(data, trend = TRUE, data_kind ="", name ="",
   
   ##__Plot__________________________________________________________________####
   # Plot data
-  plot(datatest, type = "l", xaxt = "n",
-       ylim = c(round(min(coredata(datatest), na.rm = TRUE),5),
-                round(max(coredata(datatest), na.rm = TRUE),5)),
-       xlab = axis_name_x, ylab = axis_name_y,
-       if(trend == TRUE){
-         main = paste0(data_kind, "in", name, "from", ystart, "to", yend,
-                       "with Sen's regression in purple, the Pettitt's
-                        breaking year in blue and Mann-Kendall results")
-       } else {
-         main = paste0(data_kind, "in", name, "from", ystart, "to", yend)
-       },
-       cex.main = 0.9, cex.lab = 1, cex.axis = 1)
+  if (trend == TRUE){
+    plot(datatest, type = "l", xaxt = "n",
+         ylim = c(round(min(coredata(datatest), na.rm = TRUE),5),
+                  round(max(coredata(datatest), na.rm = TRUE),5)),
+         xlab = axis_name_x, ylab = axis_name_y,
+         main = paste0(data_kind, " in ", name, " from ", ystart, " to ", yend,
+                       " with Sen's regression in purple, the Pettitt's
+                        breaking year in blue and Mann-Kendall results"),
+         cex.main = 0.9, cex.lab = 1, cex.axis = 1)
+  } else {
+    plot(datatest, type = "l", xaxt = "n",
+         ylim = c(round(min(coredata(datatest), na.rm = TRUE),5),
+                  round(max(coredata(datatest), na.rm = TRUE),5)),
+         xlab = axis_name_x, ylab = axis_name_y,
+         main = paste0(data_kind, " in ", name, " from ", ystart, " to ", yend),
+         cex.main = 0.9, cex.lab = 1, cex.axis = 1)
+  }
   grid()
   axis(1, at = seq(1, length(datatest), 60),
        labels = indexlabel[seq(1, length(datatest), 60)])
@@ -100,7 +104,7 @@ plot_trend <- function(data, trend = TRUE, data_kind ="", name ="",
       legend((2*(length(datatest))/3),round(max(coredata(datatest),
                                                 na.rm = TRUE),5),
              bty = "n", cex = 0.6,
-             paste("Pettitt's breaking point test: pvalue=",
+             paste("Pettitt's breaking point test: pvalue= ",
                    as.character(round(res_test[[3]]$p.value,4)), 
                    "(", res_test[[4]], ")","\nBreaking year (dark blue):",
                    breaking_year))
@@ -117,8 +121,8 @@ plot_trend <- function(data, trend = TRUE, data_kind ="", name ="",
          ylab = c("u(t) [SU] et u'(t) [SU]"), 
          xlab = axis_name_x , xaxt = "n", cex.main = 1, cex.lab = 1,
          cex.axis = 1,
-         main = paste0("Test sequentiel de Mann-Kendall sur", data_kind,
-                       "\na", name," de", ystart," a", yend))
+         main = paste0("Sequential Mann-Kendall test of ", data_kind,
+                       "\nin ", name," from ", ystart," to ", yend))
     lines(c(1:length(datatest)), sqmk$retr, lty = 2)
     axis(1, at = seq(1, length(datatest), 60),
          labels = indexlabel[seq(1, length(datatest), 60)])
