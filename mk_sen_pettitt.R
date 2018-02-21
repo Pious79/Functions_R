@@ -48,14 +48,14 @@ mk_sen_pettitt <- function(data)
   
   # Different test: Pettitt, MK and Sen
   pettitt <- pettitt.test(datats)
-  slope <- sens.slope(datats, level = 0.95)
+  slope <- sens.slope(datats, conf.level = 0.95)
   res_mk <- mk.test(datats)
   
-  if (res_mk$pvalue <= 0.01) {
+  if (res_mk$p.value <= 0.01) {
     (symbol_mk <- "+++")
-  } else if (res_mk$pvalue >= 0.01 & res_mk$pvalue <= 0.05) {
+  } else if (res_mk$p.value >= 0.01 & res_mk$p.value <= 0.05) {
     (symbol_mk <- "++")
-  } else if (res_mk$pvalue >= 0.05 & res_mk$pvalue <= 0.1) {
+  } else if (res_mk$p.value >= 0.05 & res_mk$p.value <= 0.1) {
     (symbol_mk <- "+")
   } else {
     (symbol_mk <- "-")
@@ -71,6 +71,7 @@ mk_sen_pettitt <- function(data)
     (symbol_pettitt <- "-")
   }
   
-  res <- list(res_mk, symbol_mk, pettitt, symbol_pettitt, slope)
+  res <- list(res_mk, symbol_mk, pettitt, symbol_pettitt, 
+              as.numeric(slope[1]))
   return(res)
 }
