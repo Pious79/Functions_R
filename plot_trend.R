@@ -1,6 +1,6 @@
 ##____________________________________________________________________________##
 ##  Function to plot Mann-Kendall, Pettitt, Sen, Sequential Mann-Kendall      ##
-##  Pierre L'HERMITE - 2017-07-19 - fc.trace_MK_Sen_SQMK_Pettitt              ##
+##  Pierre L'HERMITE - 2017-07-19 - plot_trend.R                              ##
 ##____________________________________________________________________________##
 ##----------------------------------------------------------------------------##
 #   Fonction : Trace deux graphiques, le premier avec les donnees tracees 
