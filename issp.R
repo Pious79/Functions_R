@@ -10,9 +10,9 @@
 #                                    with date in %Y-%m-%d
 ##----------------------------------------------------------------------------##
 #   Values: resissp [list] : list with 3 zoo et 1 dataframe
-#                             (issp, lengthzoo, drought_type, drought_number)
+#                             (issp, length_zoo, drought_type, drought_number)
 #            issp [zoo] : zoo with the issp values with date in %Y-%m-%d
-#            lengthzoo [zoo] : zoo with the length of drought with date
+#            length_zoo [zoo] : zoo with the length of drought with date
 #                              in %Y-%m-%d
 #            drought_type [zoo] : zoo with the type of the period for
 #                                 each month 
@@ -97,7 +97,7 @@ issp <- function(monthly_data) {
     }
   }
   
-  lengthzoo <- zoo(as.numeric(length_drought), index(monthly_data))
+  length_zoo <- zoo(as.numeric(length_drought), index(monthly_data))
   
   # Drought type and number of drought
   ext_wet <- very_wet <- wet <- normal <- dry <- very_dry <- ext_dry <-0
@@ -133,11 +133,11 @@ issp <- function(monthly_data) {
   
   drought_number <- rbind.data.frame(ext_wet, very_wet, wet, normal,
                                      dry, very_dry, ext_dry)
-  colnames(drought_number) <- c("Pluvio")
+  colnames(drought_number) <- c("Rain gauge")
   row.names(drought_number) <- c("ExWet", "VWet", "Wet", "Normal", "Dry",
                                  "VDry", "ExDry")
   
-resissp <- list(issp = issp, drought_length = lengthzoo,
+resissp <- list(issp = issp, drought_length = length_zoo,
                 drought_number_type = drought_number, type_time = drought_type)
 return(resissp)
 
