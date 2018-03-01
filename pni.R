@@ -1,6 +1,6 @@
 ##____________________________________________________________________________##
 ##  Function to calculate Percent of Normal Precipitation (PNI)               ##
-##  Pierre L'HERMITE - 2017-10-17 - fc.PNI.R                                  ##
+##  Pierre L'HERMITE - 2017-10-17 - pni.R                                     ##
 ##____________________________________________________________________________##
 ##----------------------------------------------------------------------------##
 #   Description: Calculation of percent of normal index (PNI)                 ##
