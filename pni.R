@@ -19,10 +19,10 @@
 #                                 each month 
 #           drought_number [dataframe] : dataframe with the number of 
 #                           different period by type
-#                           Extwet [issp>2], Verywet [1.99>issp>1.5],
-#                           wet [1.49>issp>1], Normal [0.99>issp>-0.99],
-#                           Dry [-1>issp>-1.49], VeryDry [-1.5>issp>-1.99],
-#                           ExtDry [-2>issp])
+#                           Extwet [pni>2], Verywet [1.99>pni>1.5],
+#                           wet [1.49>pni>1], Normal [0.99>pni>-0.99],
+#                           Dry [-1>pni>-1.49], VeryDry [-1.5>pni>-1.99],
+#                           ExtDry [-2>pni])
 ##----------------------------------------------------------------------------##
 #-------------------------------------------------------------------------------
 
