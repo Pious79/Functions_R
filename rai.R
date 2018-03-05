@@ -1,115 +1,133 @@
-##______________________________________________________________________________##
-##  Function to calculate Rainfall Anomaly Index (RAI)                          ##
-##  Pierre L'HERMITE - 2017-10-17 - fc.RAI.R                                    ##
-##______________________________________________________________________________##
-##------------------------------------------------------------------------------##
-#   Fonction : Calcul de l'indice des anomalies pluviometriques                 ##
-##------------------------------------------------------------------------------##
-#   Arguments : MonthlyData [zoo] : vecteur contenant les donnees mensuelles 
-#                                   des precipitations avec la date au format 
-#                                   %Y-%m-%d [mm/month]
-##------------------------------------------------------------------------------##
-#   Sortie    : ResRAI [list] : liste contenant :
-#               RAI [zoo] : zoo contenant les valeurs du RAI
-#               Nombre [dataframe] : tableau recapitulant les types de periodes
-#                                    seches et humides
-##------------------------------------------------------------------------------##
-#---------------------------------------------------------------------------------
+##____________________________________________________________________________##
+##  Function to calculate Rainfall Anomaly Index (RAI)                        ##
+##  Pierre L'HERMITE - 2017-10-17 - fc.RAI.R                                  ##
+##____________________________________________________________________________##
+##----------------------------------------------------------------------------##
+#   Description: Calculation of rainfall anomaly index                        ##
+##----------------------------------------------------------------------------##
+#   Arguments: monthly_data [zoo] : rainfall monthly data in zoo class 
+#                                   with date in %Y-%m-%d
+#              time_step [numeric] : default = 12, time step to sum monthly 
+#                                   precipitation (1, 3, 6, 9, 12, 24 and 48)
+##----------------------------------------------------------------------------##
+#   Values: resrai [list] : list with 3 zoo et 1 dataframe
+#                           (rai, length_zoo, drought_type, drought_number)
+#           rai [zoo] : zoo with the rai values with date in %Y-%m-%d
+#           length_zoo [zoo] : zoo with the length of drought with date
+#                              in %Y-%m-%d
+#           drought_type [zoo] : zoo with the type of the period for
+#                                 each month 
+#           drought_number [dataframe] : dataframe with the number of 
+#                           different period by type
+#                           Extwet [rai>2], Verywet [1.99>rai>1.5],
+#                           wet [1.49>rai>1], Normal [0.99>rai>-0.99],
+#                           Dry [-1>rai>-1.49], VeryDry [-1.5>rai>-1.99],
+#                           ExtDry [-2>rai])
+##----------------------------------------------------------------------------##
+#-------------------------------------------------------------------------------
 
-rai <- function(MonthlyData, Delta = 12){
-  library(hydroTSM)
-  ## Verification arguments d'entree
-  if (!is.zoo(MonthlyData)) { stop("MonthlyData must be a zoo"); return(NULL) }
-  # --- Verification du pas de temps
-  if (sfreq(MonthlyData) != "monthly") {
-    stop("MonthlyData must be a daily serie \n"); return(NULL)
+rai <- function(monthly_data, time_step = 12){
+  
+  ##__Checking______________________________________________________________####
+  # Data input checking
+  if (!is.zoo(monthly_data)) { stop("monthly_data must be a zoo"); return(NULL)}
+  
+  # Time step checking
+  if (periodicity(monthly_data)$scale != "monthly") {
+    stop("monthly_data must be a monthly serie \n"); return(NULL)
   }
   
-  #Somme selon le pas de temps
-  tmp_mean <- as.data.frame(matrix(NA, ncol = Delta, nrow = length(MonthlyData)))
-  for(i in 1:Delta) {
-    tmp_mean[, i] <- coredata(MonthlyData)[i:(length(MonthlyData)+i-1)]
+  ##__Calculation___________________________________________________________####
+  # Sum with time step
+  tmp_mean <- as.data.frame(matrix(NA, ncol = time_step,
+                                   nrow = length(monthly_data)))
+  for(i in 1:time_step) {
+    tmp_mean[, i] <- coredata(monthly_data)[i:(length(monthly_data)+i-1)]
   }
-  somme <- apply(tmp_mean, 1, sum, na.rm = FALSE)
-  moy<-mean(somme, na.rm = TRUE)
-  cumul <- zoo(somme, order.by = index(MonthlyData))
   
-  #Calcul de la moyenne des precipitations, des 10 plus grandes et 10 plus petites
-  #precipitations (na.last permet de placer les NA en debut ou fin de vecteur) 
-  avgP<-mean(cumul, na.rm = TRUE)
-  avgEh<-mean(sort(coredata(cumul),
-                   na.last = FALSE)[(length(cumul)-9):length(cumul)], na.rm = TRUE)
-  avgEm<-mean(sort(coredata(cumul),
+  sum <- apply(tmp_mean, 1, sum, na.rm = FALSE)
+  sum_zoo <- zoo(sum, order.by = index(monthly_data))
+  
+  # Average of precipitation, 10 maximum sum and 10 minimum sum of
+  # precipitation (na.last put NA at the beginnig or the ending of vector) 
+  avg_sum <- mean(sum_zoo, na.rm = TRUE)
+  avg_ext_high <- mean(sort(coredata(sum_zoo),na.last = FALSE)
+                [(length(sum_zoo)-9):length(sum_zoo)], na.rm = TRUE)
+  avg_ext_low <- mean(sort(coredata(sum_zoo),
                    na.last = TRUE)[1:10], na.rm = TRUE)
   
-  #Calcul du rainfall anomaly index
-  RAI <- rep(NA, length(cumul))
-  res <- cumul - avgP
-  for (i in c(1:length(res))){
-    if (is.na(coredata(res)[i])) {
-      RAI[i] <- NA
-    } else if(coredata(res)[i] <= 0){
-      RAI[i] <- (coredata(res)[i]*-3)/(avgEm-avgP)
+  # Calculation of rainfall anomaly index
+  rai <- rep(NA, length(sum_zoo))
+  dif <- sum_zoo - avg_sum
+  for (i in c(1:length(dif))){
+    if (is.na(coredata(dif)[i])) {
+      rai[i] <- NA
+    } else if(coredata(dif)[i] <= 0){
+      rai[i] <- (coredata(dif)[i]*-3)/(avg_ext_low-avg_sum)
     } else {
-      RAI[i] <- (coredata(res)[i]*3)/(avgEh-avgP)
+      rai[i] <- (coredata(dif)[i]*3)/(avg_ext_high-avg_sum)
     }
   }
-  RAI <- zoo(RAI, order.by = index(cumul))
+  rai <- zoo(rai, order.by = index(sum_zoo))
   
-  #Decompte des types de periodes
-  ExWet <- VWet <- Wet <- Normal <- Dry <- VDry <- ExDry <- 0
-  Sech <- rep(NA, length(RAI))
+  ##__Index analysis________________________________________________________####
+  # Drought type and number of drought
+  ext_wet <- very_wet <- wet <- normal <- dry <- very_dry <- ext_dry <- 0
+  drought_type <- rep(NA, length(rai))
   
-  for (i in 1:length(coredata(RAI))) {
-    if (is.na(coredata(RAI)[i])) {
-    } else if ((coredata(RAI)[i] >= 3)) {
-      ExWet <- ExWet + 1
-      Sech[i] <- 3
-    } else if ((2.99 > coredata(RAI)[i]) && (coredata(RAI)[i] > 2)) {
-      VWet <- VWet + 1
-      Sech[i] <- 2
-    } else if ((1.99 > coredata(RAI)[i]) && (coredata(RAI)[i] > 1)) {
-      Wet <- Wet + 1
-      Sech[i] <- 1
-    } else if ((0.99 > coredata(RAI)[i]) && (coredata(RAI)[i] > -0.99)) {
-      Normal <- Normal+1
-      Sech[i] <- 0
-    } else if ((-1 >= coredata(RAI)[i]) && (coredata(RAI)[i] > -1.99)) {
-      Dry <- Dry + 1
-      Sech[i] <- - 1
-    } else if ((-2 >= coredata(RAI)[i]) && (coredata(RAI)[i] > -2.99)) {
-      VDry <- VDry + 1
-      Sech[i] <- - 2
-    } else if ((coredata(RAI)[i] <= -3)) {
-      ExDry <- ExDry + 1
-      Sech[i] <- - 3
+  for (i in 1:length(coredata(rai))) {
+    if (is.na(coredata(rai)[i])) {
+    } else if ((coredata(rai)[i] >= 3)) {
+      ext_wet <- ext_wet + 1
+      drought_type[i] <- 3
+    } else if ((2.99 > coredata(rai)[i]) && (coredata(rai)[i] > 2)) {
+      very_wet <- very_wet + 1
+      drought_type[i] <- 2
+    } else if ((1.99 > coredata(rai)[i]) && (coredata(rai)[i] > 1)) {
+      wet <- wet + 1
+      drought_type[i] <- 1
+    } else if ((0.99 > coredata(rai)[i]) && (coredata(rai)[i] > -0.99)) {
+      normal <- normal+1
+      drought_type[i] <- 0
+    } else if ((-1 >= coredata(rai)[i]) && (coredata(rai)[i] > -1.99)) {
+      dry <- dry + 1
+      drought_type[i] <- - 1
+    } else if ((-2 >= coredata(rai)[i]) && (coredata(rai)[i] > -2.99)) {
+      very_dry <- very_dry + 1
+      drought_type[i] <- - 2
+    } else if ((coredata(rai)[i] <= -3)) {
+      ext_dry <- ext_dry + 1
+      drought_type[i] <- - 3
     } else {}
   }
   
-  nombre <- rbind.data.frame(ExWet, VWet, Wet, Normal, Dry, VDry, ExDry)
-  colnames(nombre) <- c("Pluvio")
-  row.names(nombre) <- c("Exteme Wet", "Very Wet", "Wet", "Normal", "Dry",
+  drought_number <- rbind.data.frame(ext_wet, very_wet, wet, normal, dry,
+                             very_dry, ext_dry)
+  colnames(drought_number) <- c("Pluvio")
+  row.names(drought_number) <- c("Extreme Wet", "Very Wet", "Wet", "Normal", "Dry",
                        "Very Dry", "Extreme Dry")
   
   #calcul la duree des secheresses
-  duree <- numeric()
-  neg <- 0
-  pos <- 0
-  for (iLength in 1:length(RAI)) {
-    if (is.na(RAI[iLength])){
-      duree[iLength] <- NA
-    } else if (RAI[iLength] > 0) {
-      neg <- 0
-      pos <- pos + 1
-      duree[iLength] <- pos
+  length_drought <- numeric()
+  
+  n <- 0
+  p <- 0
+  for (ilength in 1:length(rai)) {
+    if (is.na(rai[ilength])){
+      length_drought[ilength] <- NA
+    } else if (rai[ilength] > 0) {
+      n <- 0
+      p <- p + 1
+      length_drought[ilength] <- p
     } else {
-      pos <- 0
-      neg <- neg - 1 
-      duree[iLength] <- neg
+      p <- 0
+      n <- n - 1 
+      length_drought[ilength] <- n
     }
   }
   
-  dureezoo <- zoo(as.numeric(duree), index(RAI))
+  length_zoo <- zoo(as.numeric(length_drought), index(rai))
   
-  ResRAI <- list(RAI = RAI, Drought = nombre, Duree = dureezoo, SechTime = Sech)
+  resrai <- list(rai = rai, drougth_length = length_zoo,
+                 drought_number_type = drought_number, type_time = drought_type)
 }
