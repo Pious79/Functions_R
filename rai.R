@@ -107,7 +107,7 @@ rai <- function(monthly_data, time_step = 12){
   row.names(drought_number) <- c("Extreme Wet", "Very Wet", "Wet", "Normal", "Dry",
                        "Very Dry", "Extreme Dry")
   
-  #calcul la duree des secheresses
+  # Calculation of the drought length
   length_drought <- numeric()
   
   n <- 0
