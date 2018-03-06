@@ -3,8 +3,8 @@
 ##  Pierre L'HERMITE - 2017-10-12 - spei.R                                    ##
 ##____________________________________________________________________________##
 ##----------------------------------------------------------------------------##
-#   Description: Calcul l'indice standardise de precipitation-evapotranspiration##
-#              secheresse et leur duree                                       ##
+#   Description: Calculate the standardized precipitation-evaportranspiration ##
+#                index and the drought specifications                         ##
 ##----------------------------------------------------------------------------##
 #   Arguments: prec_data [zoo]: rainfall monthly data in zoo class 
 #                               with date in %Y-%m-%d
