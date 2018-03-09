@@ -104,8 +104,8 @@ rai <- function(monthly_data, time_step = 12){
   drought_number <- rbind.data.frame(ext_wet, very_wet, wet, normal, dry,
                              very_dry, ext_dry)
   colnames(drought_number) <- c("Pluvio")
-  row.names(drought_number) <- c("Extreme Wet", "Very Wet", "Wet", "Normal", "Dry",
-                       "Very Dry", "Extreme Dry")
+  row.names(drought_number) <- c("Extreme Wet", "Very Wet", "Wet", "Normal",
+                                 "Dry", "Very Dry", "Extreme Dry")
   
   # Calculation of the drought length
   length_drought <- numeric()

@@ -31,77 +31,87 @@
 
 spi <- function(prec_data, time_step = 12, distribution = "gamma"){
   
-  library(SCI)
-  ## Verification arguments d'entree
-  if (!is.zoo(prec_data)) { stop("prec_data must be a zoo"); return(NULL) }
-  # --- Verification du pas de temps
-  if (sfreq(prec_data) != "monthly") {
-    stop("prec_data must be a daily serie \n"); return(NULL)
+  ##__Checking______________________________________________________________####
+  # Data input checking
+  if (!is.zoo(prec_data)) { stop("prec_data must be a zoo"); return(NULL)}
+
+  # Time step checking
+  if (periodicity(prec_data)$scale != "monthly") {
+    stop("prec_data must be a monthly serie \n"); return(NULL)
   }
   
-  #Premier mois
+  ##__Calculation___________________________________________________________####
+  library(SCI)
+  
+  # First month
   firstmonth <- as.numeric(substr(index(prec_data[1]), 6, 7))
   
-  #Utilisation du package SCI pour calculer le SPI et creation zoo
+  # Using SCI package to calculate spi
   spi.para <- fitSCI(coredata(prec_data), first.mon = firstmonth,
                      distr = Distribution, time.scale = time_step, p0 = TRUE)
-  SPI_val <- transformSCI(coredata(prec_data), first.mon = firstmonth,
+  spi_value <- transformSCI(coredata(prec_data), first.mon = firstmonth,
                       obj = spi.para)
-  SPI <- zoo(SPI_val, order.by = index(prec_data))
+  spi <- zoo(spi_value, order.by = index(prec_data))
   
-  #Comptage du nombre de secheresse
-  ExWet <- VWet <- Wet <- Normal <- Dry <- VDry <- ExDry<-0
-  Sech <- rep(NA, length(SPI))
+  ##__Index analysis________________________________________________________####
+  # Drought type and number of drought
+  ext_wet <- very_wet <- wet <- normal <- dry <- very_dry <- ext_dry <- 0
+  drought_type <- rep(NA, length(SPI))
   
-  for(iLength in 1:length(coredata(SPI))){
-    if( is.na(coredata(SPI)[iLength])){
-    } else if((coredata(SPI)[iLength] >= 2)){
-      ExWet <- ExWet + 1
-      Sech[iLength] <- 3
-    } else if((1.99 > coredata(SPI)[iLength]) && (coredata(SPI)[iLength] > 1.5)){
-      VWet <- VWet + 1
-      Sech[iLength] <- 2
-    } else if((1.49 > coredata(SPI)[iLength]) && (coredata(SPI)[iLength] > 1)){
-      Wet <- Wet + 1
-      Sech[iLength] <- 1
-    } else if((0.99 > coredata(SPI)[iLength]) && (coredata(SPI)[iLength] > -0.99)){
-      Normal <- Normal + 1
-      Sech[iLength] <- 0
-    } else if((-1 >= coredata(SPI)[iLength]) && (coredata(SPI)[iLength] > -1.49)){
-      Dry <- Dry + 1
-      Sech[iLength] <- - 1
-    } else if((-1.5 >= coredata(SPI)[iLength]) && (coredata(SPI)[iLength] > -1.99)){
-      VDry <- VDry + 1
-      Sech[iLength] <- - 2
-    } else {
-      ExDry <- ExDry + 1
-      Sech[iLength] <- - 3
-    } 
+  for (i in 1:length(coredata(SPI))) {
+    if (is.na(coredata(SPI)[i])) {
+    } else if ((coredata(SPI)[i] >= 3)) {
+      ext_wet <- ext_wet + 1
+      drought_type[i] <- 3
+    } else if ((2.99 > coredata(SPI)[i]) && (coredata(SPI)[i] > 2)) {
+      very_wet <- very_wet + 1
+      drought_type[i] <- 2
+    } else if ((1.99 > coredata(SPI)[i]) && (coredata(SPI)[i] > 1)) {
+      wet <- wet + 1
+      drought_type[i] <- 1
+    } else if ((0.99 > coredata(SPI)[i]) && (coredata(SPI)[i] > -0.99)) {
+      normal <- normal+1
+      drought_type[i] <- 0
+    } else if ((-1 >= coredata(SPI)[i]) && (coredata(SPI)[i] > -1.99)) {
+      dry <- dry + 1
+      drought_type[i] <- - 1
+    } else if ((-2 >= coredata(SPI)[i]) && (coredata(SPI)[i] > -2.99)) {
+      very_dry <- very_dry + 1
+      drought_type[i] <- - 2
+    } else if ((coredata(SPI)[i] <= -3)) {
+      ext_dry <- ext_dry + 1
+      drought_type[i] <- - 3
+    } else {}
   }
-  nombre <- as.data.frame(c(ExWet, VWet, Wet, Normal, Dry, VDry, ExDry))
-  colnames(nombre) <- c("Pluvio")
-  row.names(nombre) <- c("ExWet", "VWet", "Wet", "Normal", "Dry", "VDry", "ExDry")
   
-  #calcul la duree des periodes seches et humides
-  duree <- numeric()
-  neg <- 0
-  pos <- 0
-  for (iLength in 1:length(SPI)) {
-    if (is.na(SPI[iLength])){
-      duree[iLength] <- NA
-    } else if (SPI[iLength] > 0) {
-      neg <- 0
-      pos <- pos + 1
-      duree[iLength] <- pos
+  drought_number <- rbind.data.frame(ext_wet, very_wet, wet, normal, dry,
+                                     very_dry, ext_dry)
+  colnames(drought_number) <- c("Rain gauge")
+  row.names(drought_number) <- c("Extreme Wet", "Very Wet", "Wet", "Normal",
+                                 "Dry", "Very Dry", "Extreme Dry")
+  
+  # Calculation of the drought length
+  length_drought <- numeric()
+  
+  n <- 0
+  p <- 0
+  for (ilength in 1:length(SPI)) {
+    if (is.na(SPI[ilength])){
+      length_drought[ilength] <- NA
+    } else if (SPI[ilength] > 0) {
+      n <- 0
+      p <- p + 1
+      length_drought[ilength] <- p
     } else {
-      pos <- 0
-      neg <- neg - 1 
-      duree[iLength] <- neg
+      p <- 0
+      n <- n - 1 
+      length_drought[ilength] <- n
     }
   }
   
-  dureezoo <- zoo(as.numeric(duree), index(SPI))
+  length_zoo <- zoo(as.numeric(length_drought), index(SPI))
   
-  Resultat <- list(SPI = SPI, Drought = nombre, Duree = dureezoo, SechTime = Sech)
+  Resultat <- list(spi = spi, drougth_length = length_zoo,
+                   drought_number_type = drought_number, type_time = drought_type)
   return(Resultat)
 }

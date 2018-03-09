@@ -91,7 +91,7 @@ spei <- function(prec_data, evapo_data, time_step = 12,
   
   drought_number <- rbind.data.frame(ext_wet, very_wet, wet, normal, dry,
                                      very_dry, ext_dry)
-  colnames(drought_number) <- c("Pluvio")
+  colnames(drought_number) <- c("Rain gauge")
   row.names(drought_number) <- c("Extreme Wet", "Very Wet", "Wet", "Normal",
                                  "Dry", "Very Dry", "Extreme Dry")
   
@@ -116,7 +116,7 @@ spei <- function(prec_data, evapo_data, time_step = 12,
   
   length_zoo <- zoo(as.numeric(length_drought), index(spei))
   
-  resspei <-list(spei = spei, drougth_length = length_zoo,
+  resspei <- list(spei = spei, drougth_length = length_zoo,
                  drought_number_type = drought_number, type_time = drought_type)
   
   return(Resultat)
