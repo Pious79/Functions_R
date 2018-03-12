@@ -1,17 +1,33 @@
-##____________________________________________________________________________##
-##  Function to filter data with Hanning filter order 2                       ##
-##  Pierre L'HERMITE - 2017-07-19 - hanning.R                                 ##
-##____________________________________________________________________________##
-##----------------------------------------------------------------------------##
-#   Description: Calculate data with hanning filter order 2
-##----------------------------------------------------------------------------##
-#   Argument: data [zoo] : vector with daily, monthly, seasonnal or annual
-#                          with date in %Y-%m-%d
-##----------------------------------------------------------------------------##
-#   Value: hanzoo [zoo] : vector with data after hanning filter with date 
-#                          in %Y-%m-%d
-##----------------------------------------------------------------------------##
-#-------------------------------------------------------------------------------
+#'Filter data with Hanning filter order 2
+#'
+#'Eliminate variations
+#'
+#'@param monthly_data (zoo): rainfall daily, monthlyn seasonnality or annual data
+#'in zoo class with date in \%Y-\%m-\%d
+#'
+#'@return hanzoo (zoo): vector with data after hanning filter with date 
+#'in \%Y-\%m-\%d
+#'
+#'@author Pierre L'Hermite
+#'
+#'@examples
+#'## Data preparation
+#'load("data/Prec_data.Rdata")
+#'prec <- zoo(PluvioData$TabCompleteP, PluvioData$TabDatesR)
+#'
+#'## Index
+#'result <- hanning(prec)
+#'
+#'@references
+#'A.A. Assani, (1999)
+#'Analysis of rainfall variability (1916-1996) at Lubumbashi (Congo-Kinshasa) 
+#'relative to some atmospheric (southern oscillation) and oceanic
+#'(El Nino / La Nina) circulation indicators
+#'Sécheresse, vol. 10, n° 4, p. 245-252.
+#'\url{http://www.jle.com/download/sec-273441-analyse_de_la_variabilite_temporelle_des_precipitations_1916_1996_a_lubumbashi_congo_kinshasa_en_relation_avec_certains_ind--WqbE738AAQEAABN6YpkAAAAC-a.pdf}
+#'
+#'@seealso
+#'\code{\link[piflowtest]{plot_trend}} function to plot
 
 hanning <- function(data){
 
